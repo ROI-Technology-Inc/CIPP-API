@@ -15,11 +15,21 @@ env:
 jobs:
   deploy:
     runs-on: windows-latest
-    
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
       
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_771BACE9455C473A8B1767182E208435 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_03447B9C587E44A1829045178631F6A8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5928EC7238184D639C314581E0E8108E }}
+
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
         id: fa
@@ -27,4 +37,4 @@ jobs:
           app-name: 'cippo6pva-auditlog'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BD5C9833057A4F12B619834DD7B32C28 }}
+          
